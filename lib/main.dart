@@ -1,6 +1,7 @@
 import 'package:flutter/services.dart';
 import 'package:flame/util.dart';
 import 'package:flutter/material.dart';
+import 'package:boxgame/box-game.dart';
 
 void main() async {
   Util flameUtil = Util();
