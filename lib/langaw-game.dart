@@ -10,6 +10,8 @@ import 'package:boxgame/components/agile-fly.dart';
 import 'package:boxgame/components/drooler-fly.dart';
 import 'package:boxgame/components/hungry-fly.dart';
 import 'package:boxgame/components/macho-fly.dart';
+import 'package:boxgame/view.dart';
+import 'package:boxgame/views/home-view.dart';
 
 class LangawGame extends Game {
   Size screenSize;
@@ -17,6 +19,9 @@ class LangawGame extends Game {
   Backyard background;
   List<Fly> flies;
   Random rnd;
+  HomeView homeView;
+
+  View activeView = View.home;
 
   LangawGame() {
     initialize();
@@ -28,6 +33,7 @@ class LangawGame extends Game {
     resize(await Flame.util.initialDimensions());
 
     background = Backyard(this);
+    homeView = HomeView(this);
     spawnFly();
   }
 
@@ -57,6 +63,8 @@ class LangawGame extends Game {
     background.render(canvas);
 
     flies.forEach((Fly fly) => fly.render(canvas));
+
+    if (activeView == View.home) homeView.render(canvas);
   }
 
   void update(double t) {
