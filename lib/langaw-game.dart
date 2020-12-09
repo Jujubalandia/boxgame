@@ -10,6 +10,7 @@ import 'package:boxgame/components/agile-fly.dart';
 import 'package:boxgame/components/drooler-fly.dart';
 import 'package:boxgame/components/hungry-fly.dart';
 import 'package:boxgame/components/macho-fly.dart';
+import 'package:boxgame/components/start-button.dart';
 import 'package:boxgame/view.dart';
 import 'package:boxgame/views/home-view.dart';
 
@@ -22,6 +23,7 @@ class LangawGame extends Game {
   HomeView homeView;
 
   View activeView = View.home;
+  StartButton startButton;
 
   LangawGame() {
     initialize();
@@ -31,6 +33,7 @@ class LangawGame extends Game {
     flies = List<Fly>();
     rnd = Random();
     resize(await Flame.util.initialDimensions());
+    startButton = StartButton(this);
 
     background = Backyard(this);
     homeView = HomeView(this);
@@ -65,6 +68,10 @@ class LangawGame extends Game {
     flies.forEach((Fly fly) => fly.render(canvas));
 
     if (activeView == View.home) homeView.render(canvas);
+
+    if (activeView == View.home || activeView == View.lost) {
+      startButton.render(canvas);
+    }
   }
 
   void update(double t) {
