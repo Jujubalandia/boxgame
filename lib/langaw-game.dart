@@ -14,6 +14,7 @@ import 'package:boxgame/components/start-button.dart';
 import 'package:boxgame/view.dart';
 import 'package:boxgame/views/home-view.dart';
 import 'package:boxgame/views/lost-view.dart';
+import 'package:boxgame/controllers/spawner.dart';
 
 class LangawGame extends Game {
   Size screenSize;
@@ -26,6 +27,7 @@ class LangawGame extends Game {
   View activeView = View.home;
   HomeView homeView;
   LostView lostView;
+  FlySpawner spawner;
 
   LangawGame() {
     initialize();
@@ -36,11 +38,12 @@ class LangawGame extends Game {
     rnd = Random();
     resize(await Flame.util.initialDimensions());
 
+    spawner = FlySpawner(this);
+
     background = Backyard(this);
     startButton = StartButton(this);
     homeView = HomeView(this);
     lostView = LostView(this);
-    spawnFly();
   }
 
   void spawnFly() {
@@ -79,7 +82,7 @@ class LangawGame extends Game {
   }
 
   void update(double t) {
-    flies.forEach((Fly fly) => fly.update(t));
+    flies.forEach((Fly fly) => spawner.update(t));
     flies.removeWhere((Fly fly) => fly.isOffScreen);
   }
 
