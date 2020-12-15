@@ -15,35 +15,49 @@ import 'package:boxgame/view.dart';
 import 'package:boxgame/views/home-view.dart';
 import 'package:boxgame/views/lost-view.dart';
 import 'package:boxgame/controllers/spawner.dart';
+import 'package:boxgame/components/credits-button.dart';
+import 'package:boxgame/components/help-button.dart';
+import 'package:boxgame/views/help-view.dart';
+import 'package:boxgame/views/credits-view.dart';
 
 class LangawGame extends Game {
   Size screenSize;
   double tileSize;
+  Random rnd;
+
   Backyard background;
   List<Fly> flies;
   StartButton startButton;
-  Random rnd;
+  HelpButton helpButton;
+  CreditsButton creditsButton;
+
+  FlySpawner spawner;
 
   View activeView = View.home;
   HomeView homeView;
   LostView lostView;
-  FlySpawner spawner;
+  HelpView helpView;
+  CreditsView creditsView;
 
   LangawGame() {
     initialize();
   }
 
   void initialize() async {
-    flies = List<Fly>();
     rnd = Random();
+    flies = List<Fly>();
     resize(await Flame.util.initialDimensions());
-
-    spawner = FlySpawner(this);
 
     background = Backyard(this);
     startButton = StartButton(this);
+    helpButton = HelpButton(this);
+    creditsButton = CreditsButton(this);
+
+    spawner = FlySpawner(this);
     homeView = HomeView(this);
     lostView = LostView(this);
+    helpView = HelpView(this);
+    creditsView = CreditsView(this);
   }
 
   void spawnFly() {
@@ -78,11 +92,16 @@ class LangawGame extends Game {
     if (activeView == View.lost) lostView.render(canvas);
     if (activeView == View.home || activeView == View.lost) {
       startButton.render(canvas);
+      helpButton.render(canvas);
+      creditsButton.render(canvas);
     }
+    if (activeView == View.help) helpView.render(canvas);
+    if (activeView == View.credits) creditsView.render(canvas);
   }
 
   void update(double t) {
-    flies.forEach((Fly fly) => spawner.update(t));
+    spawner.update(t);
+    flies.forEach((Fly fly) => fly.update(t));
     flies.removeWhere((Fly fly) => fly.isOffScreen);
   }
 
@@ -93,6 +112,30 @@ class LangawGame extends Game {
 
   void onTapDown(TapDownDetails d) {
     bool isHandled = false;
+
+    // dialog boxes
+    if (!isHandled) {
+      if (activeView == View.help || activeView == View.credits) {
+        activeView = View.home;
+        isHandled = true;
+      }
+    }
+
+    // help button
+    if (!isHandled && helpButton.rect.contains(d.globalPosition)) {
+      if (activeView == View.home || activeView == View.lost) {
+        helpButton.onTapDown();
+        isHandled = true;
+      }
+    }
+
+    // credits button
+    if (!isHandled && creditsButton.rect.contains(d.globalPosition)) {
+      if (activeView == View.home || activeView == View.lost) {
+        creditsButton.onTapDown();
+        isHandled = true;
+      }
+    }
 
     // start button
     if (!isHandled && startButton.rect.contains(d.globalPosition)) {
